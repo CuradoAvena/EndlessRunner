@@ -8,9 +8,15 @@ public class CubeMove : MonoBehaviour
     public Rigidbody rb;
     public Color colorInicial;     // Color al iniciar
 
-    float horizontalInput;
-    public float horizontalMultiplier =2f;
+    public float fuerzaSalto = 7f; // Fuerza del salto
+    public LayerMask capaSuelo; // Capa que identifica el suelo
+    public Transform checkSuelo; // Objeto que verifica contacto con el suelo
+    public float radioCheck = 0.4f; // Radio de detección del suelo
 
+    float horizontalInput;
+    public float horizontalMultiplier = 2f; 
+
+    bool enSuelo; // ¿Está el cubo tocando el suelo?
     void Start()
     {
         // Cambia el color al inicio (ejemplo: rojo)
@@ -26,17 +32,22 @@ public class CubeMove : MonoBehaviour
     private void Update()
     {
         horizontalInput = Input.GetAxis("Horizontal");
+
+         // Versión simplificada para testear
+            enSuelo = Physics.Raycast(transform.position, Vector3.down, 0.6f, capaSuelo);
+
+            if (Input.GetKeyDown(KeyCode.Space)) {
+                if (enSuelo)
+                {
+                    rb.AddForce(Vector3.up * fuerzaSalto, ForceMode.Impulse);
+                    Debug.Log("Saltando!"); // Para verificar en consola
+                }
+                else
+                {
+                    Debug.Log("No está en suelo"); // Mensaje de depuración
+                }
+             }
         
-        // Cambia de color con la barra espaciadora
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Color colorAleatorio = new Color(
-                Random.value,  // R (rojo)
-                Random.value,  // G (verde)
-                Random.value,  // B (azul)
-                1f            // Alpha (transparencia)
-            );
-            GetComponent<Renderer>().material.color = colorAleatorio;
-        }
+
     }
 }
