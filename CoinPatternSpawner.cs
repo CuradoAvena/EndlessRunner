@@ -6,21 +6,21 @@ public class CoinPatternSpawner : MonoBehaviour
 {
     public enum SpawnPattern { Lineal, Arco, Zigzag }
 
-    [Header("ConfiguraciÛn General")]
+    [Header("Configuraci√≥n General")]
     public float spawnDistance = 20f;
     public float yPosition = 1f;
     public float zSpacing = 3f;
     public int coinsPerPattern = 5;
 
-    [Header("Cambio de PatrÛn")]
+    [Header("Cambio de Patr√≥n")]
     public float patternChangeInterval = 10f; // Cambia cada 10 segundos
     private float _nextChangeTime;
 
-    [Header("PatrÛn: Arco")]
+    [Header("Patr√≥n: Arco")]
     public float arcHeight = 2f;
     public float arcWidth = 4f;
 
-    [Header("PatrÛn: Zigzag")]
+    [Header("Patr√≥n: Zigzag")]
     public float zigzagIntensity = 3f;
     public float zigzagFrequency = 0.5f;
 
@@ -28,9 +28,9 @@ public class CoinPatternSpawner : MonoBehaviour
     private Transform _player;
     private SpawnPattern _currentPattern;
 
-    [Header("DetecciÛn de Obst·culos")]
-    public LayerMask obstacleMask; // Capa de obst·culos (asÌgnala en el Inspector)
-    public float raycastDownDistance = 5f; // Distancia m·xima del Raycast
+    [Header("Detecci√≥n de Obst√°culos")]
+    public LayerMask obstacleMask; // Capa de obst√°culos (as√≠gnala en el Inspector)
+    public float raycastDownDistance = 5f; // Distancia m√°xima del Raycast
     public float verticalOffset = 0.5f; // Ajuste de altura al spawnear
 
     void Start()
@@ -38,13 +38,13 @@ public class CoinPatternSpawner : MonoBehaviour
         _player = GameObject.FindGameObjectWithTag("Player").transform;
         _nextZPosition = spawnDistance;
         _nextChangeTime = Time.time + patternChangeInterval;
-        PickRandomPattern(); // Primer patrÛn aleatorio
+        PickRandomPattern(); // Primer patr√≥n aleatorio
         GenerateInitialPatterns();
     }
 
     void Update()
     {
-        // Cambia el patrÛn cada X segundos
+        // Cambia el patr√≥n cada X segundos
         if (Time.time >= _nextChangeTime)
         {
             PickRandomPattern();
@@ -61,7 +61,7 @@ public class CoinPatternSpawner : MonoBehaviour
 
     void PickRandomPattern()
     {
-        // Elige un patrÛn aleatorio (excluyendo el actual para mayor variedad)
+        // Elige un patr√≥n aleatorio (excluyendo el actual para mayor variedad)
         SpawnPattern newPattern;
         do
         {
@@ -69,7 +69,7 @@ public class CoinPatternSpawner : MonoBehaviour
         } while (newPattern == _currentPattern && System.Enum.GetValues(typeof(SpawnPattern)).Length > 1);
 
         _currentPattern = newPattern;
-        Debug.Log($"PatrÛn cambiado a: {_currentPattern}");
+        Debug.Log($"Patr√≥n cambiado a: {_currentPattern}");
     }
 
     void GenerateInitialPatterns()
@@ -88,7 +88,7 @@ public class CoinPatternSpawner : MonoBehaviour
             float z = _nextZPosition + (i * zSpacing);
             Vector3 spawnPos = CalculatePatternPosition(z);
 
-            // Verifica si la posiciÛn est· libre de obst·culos
+            // Verifica si la posici√≥n est√° libre de obst√°culos
             if (IsPositionValid(spawnPos))
             {
                 GameObject coin = CoinPool.Instance.GetCoin();
@@ -99,13 +99,13 @@ public class CoinPatternSpawner : MonoBehaviour
 
     bool IsPositionValid(Vector3 position)
     {
-        // Raycast hacia abajo para detectar obst·culos
+        // Raycast hacia abajo para detectar obst√°culos
         if (Physics.Raycast(position, Vector3.down, out RaycastHit hit, raycastDownDistance, obstacleMask))
         {
-            // Si golpea un obst·culo, la posiciÛn NO es v·lida
+            // Si golpea un obst√°culo, la posici√≥n NO es v√°lida
             return false;
         }
-        return true; // PosiciÛn v·lida
+        return true; // Posici√≥n v√°lida
     }
 
     Vector3 CalculatePatternPosition(float z)
@@ -125,7 +125,23 @@ public class CoinPatternSpawner : MonoBehaviour
             default: // Lineal
                 return new Vector3(0, yPosition, z);
         }
+      
+/* switch (_currentPattern)
+    {
+        case SpawnPattern.Arco:
+            // --- Arco a lo largo del eje Z (semic√≠rculo en Z/X) ---
+            float angle = Mathf.Lerp(0f, 180f, (z - _nextZPosition) / (zSpacing * (coinsPerPattern - 1)));
+            float radius = arcWidth;
+            float x = Mathf.Sin(angle * Mathf.Deg2Rad) * radius; // Sin para X (horizontal)
+            float zArc = Mathf.Cos(angle * Mathf.Deg2Rad) * radius + _nextZPosition; // Cos para Z (profundidad)
+            return new Vector3(x, yPosition, zArc);
+
+        case SpawnPattern.Zigzag:
+            float xZig = Mathf.PingPong(z * zigzagFrequency, zigzagIntensity * 2) - zigzagIntensity;
+            return new Vector3(xZig, yPosition, z);
+
+        default: // Lineal
+            return new Vector3(0, yPosition, z);
+    }*/
     }
-
-
 }
